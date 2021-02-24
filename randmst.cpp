@@ -96,9 +96,12 @@ float primsnot0(int v, int dim)
       else
       {
         float x = distance(coordinates[tmp.label], coordinates[j], dim);
-        dist[j - 1] = min(x, dist[j - 1]);
-        element w = {j, x};
-        H.insert(w);
+        if (dist[j - 1] > x)
+        {
+          dist[j - 1] = x;
+          element w = {j, x};
+          H.insert(w);
+        }
       }
     }
   }
