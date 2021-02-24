@@ -35,9 +35,9 @@ private:
   //used in min_heapify
   void swap(int i, int j)
   {
-    element tmp = arr[i];
+    element temp = arr[i];
     arr[i] = arr[j];
-    arr[j] = tmp;
+    arr[j] = temp;
     label_map[arr[i].label] = i;
     label_map[arr[j].label] = j;
   };
