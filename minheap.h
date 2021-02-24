@@ -13,9 +13,8 @@ class Heap
 
 {
 private:
-  //allows us to find index of label in O(1) time, increases speed
+  //time for space
   unordered_map<int, int> label_map;
-  //vector, so we have dynamic space
   vector<element> arr;
 
   int parent(int i)
@@ -42,7 +41,6 @@ private:
     label_map[arr[j].label] = j;
   };
 
-  //min_heapify as referred to in section video
   void min_heapify(int i)
   {
     int l = left(i);
@@ -61,9 +59,12 @@ private:
   };
 
 public:
+  int heap_size()
+  {
+    return arr.size();
+  }
   void insert(element i)
   {
-    //insert as in section
     if (label_map.find(i.label) == label_map.end())
     {
       arr.push_back(i);
@@ -75,7 +76,6 @@ public:
         n = parent(n);
       }
     }
-    //else we need to update
     else
     {
       int index = label_map[i.label];
@@ -107,10 +107,5 @@ public:
       return {0, 0};
     };
   };
-  //build_heap, won't use it in our prims
   void build_heap(vector<int> A){};
-  int heap_size()
-  {
-    return arr.size();
-  }
 };

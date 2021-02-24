@@ -38,7 +38,8 @@ float prims0(int v)
   H.insert(s);
   while (H.heap_size())
   {
-    S[H.extract_min().label - 1] = 1;
+    element p = H.extract_min();
+    S[p.label - 1] = 1;
     for (int j = 1; j < v + 1; j++)
     {
       if (S[j - 1])
@@ -85,8 +86,8 @@ float primsnot0(int v, int dim)
   H.insert(s);
   while (H.heap_size())
   {
-    element tmp = H.extract_min();
-    S[tmp.label - 1] = 1;
+    element p = H.extract_min();
+    S[p.label - 1] = 1;
     for (int j = 1; j < v + 1; j++)
     {
       if (S[j - 1])
@@ -95,7 +96,7 @@ float primsnot0(int v, int dim)
       }
       else
       {
-        float x = distance(coordinates[tmp.label], coordinates[j], dim);
+        float x = distance(coordinates[p.label], coordinates[j], dim);
         if (dist[j - 1] > x)
         {
           dist[j - 1] = x;
