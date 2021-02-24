@@ -11,10 +11,10 @@ float random_edge()
   return ((float)rand() / (RAND_MAX));
 };
 
-float distance(float coord1[], float coord2[], int d)
+float distance(float coord1[], float coord2[], int dim)
 {
   float square_dist = 0;
-  for (int i = 0; i < d; i++)
+  for (int i = 0; i < dim; i++)
   {
     square_dist += (coord1[i] - coord2[i]) * (coord1[i] - coord2[i]);
   }
@@ -22,7 +22,7 @@ float distance(float coord1[], float coord2[], int d)
 };
 
 // for "0" we don't need to store vertices, just generate edges
-float prims0(int v, int d)
+float prims0(int v)
 {
   float min_dist = 0;
   float dist[v];
@@ -34,10 +34,11 @@ float prims0(int v, int d)
     S[i] = false;
   }
   dist[0] = 0;
-  H.insert({1, 0});
+  element s = {1, 0};
+  H.insert(s);
   while (H.heap_size())
   {
-    S[H.extract_min().label - 1] = true;
+    S[H.extract_min().label - 1] = 1;
     for (int j = 1; j < v + 1; j++)
     {
       if (S[j - 1])
@@ -50,7 +51,8 @@ float prims0(int v, int d)
         if (dist[j - 1] > x)
         {
           dist[j - 1] = x;
-          H.insert({j, x});
+          element w = {j, x};
+          H.insert(w);
         }
       }
     }
@@ -62,24 +64,25 @@ float prims0(int v, int d)
   return min_dist;
 }
 
-float primsnot0(int v, int d)
+float primsnot0(int v, int dim)
 {
   int S[v];
-  float coords[v][d];
   float mindist = 0;
   float dist[v];
+  float coordinates[v][dim];
   Heap H;
   for (int i = 0; i < v; i++)
   {
     S[i] = 0;
     dist[i] = 5;
-    for (int j = 0; j < d; j++)
+    for (int j = 0; j < dim; j++)
     {
-      coords[i][j] = random_edge();
+      coordinates[i][j] = random_edge();
     }
   }
   dist[0] = 0;
-  H.insert({1, 0});
+  element s = {1, 0};
+  H.insert(s);
   while (H.heap_size())
   {
     element tmp = H.extract_min();
@@ -92,9 +95,10 @@ float primsnot0(int v, int d)
       }
       else
       {
-        float x = distance(coords[tmp.label], coords[j], d);
+        float x = distance(coordinates[tmp.label], coordinates[j], dim);
         dist[j - 1] = min(x, dist[j - 1]);
-        H.insert({j, x});
+        element w = {j, x};
+        H.insert(w);
       }
     }
   }
@@ -114,7 +118,7 @@ int main(int argc, char *argv[])
   int dimension = atoi(argv[4]);
   float sum = 0;
 
-  if (dimension == 1 || dimension < 0)
+  if (dimension == 1)
   {
     cout << "not possible";
     return 1;
@@ -124,23 +128,15 @@ int main(int argc, char *argv[])
   {
     if (dimension == 0)
     {
-      auto start = std::chrono::high_resolution_clock::now();
-      float p = prims0(numpoints, dimension);
-      auto finish = std::chrono::high_resolution_clock::now();
-      std::chrono::duration<double> elapsed = finish - start;
+      float p = prims0(numpoints);
       sum += p;
       cout << p << endl;
-      cout << elapsed.count() << endl;
     }
     else
     {
-      auto start = std::chrono::high_resolution_clock::now();
       float p = primsnot0(numpoints, dimension);
-      auto finish = std::chrono::high_resolution_clock::now();
-      std::chrono::duration<double> elapsed = finish - start;
       sum += p;
       cout << p << endl;
-      cout << elapsed.count() << endl;
     }
   }
 
