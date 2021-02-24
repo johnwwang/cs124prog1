@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <math.h>
 #include <unordered_map>
 using namespace std;
 
@@ -19,7 +20,7 @@ private:
 
   int parent(int i)
   {
-    return (i - 1) / 2;
+    return floor(i / 2);
   };
 
   int left(int i)
