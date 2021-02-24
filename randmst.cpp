@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 #include <chrono>
-#include "minheap.h"
+#include "min_heap.h"
 using namespace std;
 
 float random_edge()
