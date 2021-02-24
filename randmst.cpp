@@ -1,73 +1,148 @@
 #include <iostream>
-#include <cstdlib>
 #include <vector>
-#include <cmath>
-#include <ctime>
-#include <algorithm>
+#include <time.h>
+#include <math.h>
 #include <chrono>
-#include <unistd.h>
-#include <list>
+#include "minheap.h"
 using namespace std;
 
-int flag;
-int numpoints;
-int numtrials;
-int dimension;
-float coordinates[4][262144]
-
-    // generate random number between 0 and 1
-    float
-    randByN()
+float random_edge()
 {
-  return (float)rand() / RAND - MAX;
-}
+  return ((float)rand() / (RAND_MAX));
+};
 
-// distance formula
-float calcRand(int dim, int index1, int index2)
+float distance(float coord1[], float coord2[], int d)
 {
-  float sum = 0;
-  for (int i = 0; i <= dim; i++)
+  float square_dist = 0;
+  for (int i = 0; i < d; i++)
   {
-    sum += pow(abs(coordinates[i][index1] - coordinates[i][index2]), 2);
+    square_dist += (coord1[i] - coord2[i]) * (coord1[i] - coord2[i]);
   }
-  return sqrt(sum);
-}
+  return sqrt(square_dist);
+};
 
-// creating heap
-vector<float> heap;
-
-// create mst and return minimum weight
-float prim()
+// for "0" we don't need to store vertices, just generate edges
+float prims0(int v, int d)
 {
-  srand(time(0))
-
-  // populate coordinates array with 0s
-  // populate coordiate array using randByN() function
-  // keep edgeSum count
-  // array of distances, visited, and onheap -- to keep track of
-  // which vertices are pushed onto the heap
-
-  // return edgeSum
-}
-
-// computes average weight
-float average()
-{
-  float sum = 0;
-  for (int i = 0; i < numtrials; i++)
+  float min_dist = 0;
+  float dist[v];
+  bool S[v];
+  Heap H;
+  for (int i = 0; i < v; i++)
   {
-    float weight = prim();
-    sum += weight;
+    dist[i] = 5;
+    S[i] = false;
   }
-  return (float)weight / numtrials;
+  dist[0] = 0;
+  H.insert({1, 0});
+  while (H.heap_size())
+  {
+    S[H.extract_min().label - 1] = true;
+    for (int j = 1; j < v + 1; j++)
+    {
+      if (S[j - 1])
+      {
+        continue;
+      }
+      else
+      {
+        float x = random_edge();
+        if (dist[j - 1] > x)
+        {
+          dist[j - 1] = x;
+          H.insert({j, x});
+        }
+      }
+    }
+  }
+  for (int i = 0; i < v; i++)
+  {
+    min_dist += dist[i];
+  }
+  return min_dist;
+}
+
+float primsnot0(int v, int d)
+{
+  int S[v];
+  float coords[v][d];
+  float mindist = 0;
+  float dist[v];
+  Heap H;
+  for (int i = 0; i < v; i++)
+  {
+    S[i] = 0;
+    dist[i] = 5;
+    for (int j = 0; j < d; j++)
+    {
+      coords[i][j] = random_edge();
+    }
+  }
+  dist[0] = 0;
+  H.insert({1, 0});
+  while (H.heap_size())
+  {
+    element tmp = H.extract_min();
+    S[tmp.label - 1] = 1;
+    for (int j = 1; j < v + 1; j++)
+    {
+      if (S[j - 1])
+      {
+        continue;
+      }
+      else
+      {
+        float x = distance(coords[tmp.label], coords[j], d);
+        dist[j - 1] = min(x, dist[j - 1]);
+        H.insert({j, x});
+      }
+    }
+  }
+  for (int i = 0; i < v; i++)
+  {
+    mindist += dist[i];
+  }
+  return mindist;
 }
 
 int main(int argc, char *argv[])
 {
-  srand(time(0));
-  flag = std::stoi(argv[1]);
-  numpoints = std::stoi(argv[2]);
-  numtrials = std::stoi(argv[3]);
-  dimension = std::stoi(argv[4]);
-  printf("%d points, %d trials, dimension %d: %f\n", numpoints, numtrials, dimension, average());
+  srand(time(NULL));
+  int flag = atoi(argv[1]);
+  int numpoints = atoi(argv[2]);
+  int numtrials = atoi(argv[3]);
+  int dimension = atoi(argv[4]);
+  float sum = 0;
+
+  if (dimension == 1 || dimension < 0)
+  {
+    cout << "not possible";
+    return 1;
+  }
+
+  for (int i = 0; i < numtrials; i++)
+  {
+    if (dimension == 0)
+    {
+      auto start = std::chrono::high_resolution_clock::now();
+      float p = prims0(numpoints, dimension);
+      auto finish = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> elapsed = finish - start;
+      sum += p;
+      cout << p << endl;
+      cout << elapsed.count() << endl;
+    }
+    else
+    {
+      auto start = std::chrono::high_resolution_clock::now();
+      float p = primsnot0(numpoints, dimension);
+      auto finish = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> elapsed = finish - start;
+      sum += p;
+      cout << p << endl;
+      cout << elapsed.count() << endl;
+    }
+  }
+
+  cout << "| num_of_points: " << numpoints << " | dimensions: " << dimension << " | trials: " << numtrials << " | average " << sum / numtrials << " |" << endl;
 }

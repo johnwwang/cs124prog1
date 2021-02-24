@@ -3,100 +3,114 @@
 #include <unordered_map>
 using namespace std;
 
-struct node
+struct element
 {
   int label;
-  float dist;
+  float d;
 };
 
 class Heap
+
 {
 private:
-  int parent(int i);
-  int right(int i);
-  int left(int i);
-  void swap(int a, int b);
-  void min_heapify(int i);
+  //allows us to find index of label in O(1) time, increases speed
+  unordered_map<int, int> label_map;
+  //vector, so we have dynamic space
+  vector<element> arr;
 
-public:
-  unordered_map<int, int> location;
-  vector<node> H;
-  Heap();
-  void insert(node i);
-
-  Heap::Heap()
-  {
-  }
-
-  int Heap::parent(int i)
+  int parent(int i)
   {
     return (i - 1) / 2;
-  }
+  };
 
-  int Heap::right(int i)
-  {
-    return 2 * i + 2;
-  }
-
-  int Heap::left(int i)
+  int left(int i)
   {
     return 2 * i + 1;
-  }
+  };
 
-  void Heap::swap(int i, int j)
+  int right(int i)
   {
-    node tmp = H[i];
-    H[i] = H[j];
-    location[H[i].label] = i;
-    H[j] = tmp;
-    location[H[j].label] = j;
-  }
+    return 2 * i + 2;
+  };
+  //used in min_heapify
+  void swap(int i, int j)
+  {
+    element tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+    label_map[arr[i].label] = i;
+    label_map[arr[j].label] = j;
+  };
 
-  void Heap::min_heapify(int i)
+  //min_heapify as referred to in section video
+  void min_heapify(int i)
   {
     int l = left(i);
     int r = right(i);
+    int n = arr.size();
     int smallest = i;
-    if (l < H.size() && H[l].dist < H[i].dist)
+    if (l < n && arr[i].d > arr[l].d)
       smallest = l;
-    if (r < H.size() && H[r].dist < H[smallest].dist)
+    if (r < n && arr[smallest].d > arr[r].d)
       smallest = r;
     if (smallest != i)
     {
       swap(i, smallest);
       min_heapify(smallest);
     }
-  }
+  };
 
-  void Heap::update(int label, float value)
+public:
+  void insert(element i)
   {
-    int n = location[label];
-    if (H[n].dist <= value)
+    //insert as in section
+    if (label_map.find(i.label) == label_map.end())
     {
-      return;
-    }
-    H[n].dist = value;
-    while (n > 0 && (H[parent(n)].dist > H[n].dist))
-    {
-      swap(parent(n), n);
-      n = parent(n);
-    }
-  }
-
-  void Heap::insert(node i)
-  {
-    if (location.find(i.label) != location.end())
-    {
-      update(i.label, i.dist);
-    }
-    else
-    {
-
-      H.push_back(i);
-      location[i.label] = get_size() - 1;
-      int n = H.size() - 1;
-      while (n > 0 && (H[parent(n)].dist > H[n].dist))
+      arr.push_back(i);
+      label_map[i.label] = heap_size() - 1;
+      int n = arr.size() - 1;
+      while (n > 0 && (arr[n].d < arr[parent(n)].d))
       {
         swap(parent(n), n);
         n = parent(n);
       }
+    }
+    //else we need to update
+    else
+    {
+      int index = label_map[i.label];
+      if (arr[index].d > i.d)
+      {
+        arr[index].d = i.d;
+        while (index > 0 && (arr[parent(index)].d > arr[index].d))
+        {
+          swap(parent(index), index);
+          index = parent(index);
+        }
+      }
+    }
+  };
+
+  element extract_min()
+  {
+    if (heap_size() != 0)
+    {
+      element min = arr[0];
+      label_map.erase(min.label);
+      swap(0, heap_size() - 1);
+      arr.pop_back();
+      min_heapify(0);
+      return min;
+    }
+    else
+    {
+      return {0, 0};
+    };
+  };
+  //build_heap, won't use it in our prims
+  void build_heap(vector<int> A){};
+  int heap_size()
+  {
+    return arr.size();
+  }
+};
