@@ -133,7 +133,6 @@ int main(int argc, char *argv[])
     {
       float p = prims0(numpoints);
       sum += p;
-      cout << p << endl;
     }
     else
     {
@@ -143,5 +142,5 @@ int main(int argc, char *argv[])
     }
   }
 
-  cout << "| num_of_points: " << numpoints << " | dimensions: " << dimension << " | trials: " << numtrials << " | average " << sum / numtrials << " |" << endl;
+  cout << "number of points: " << numpoints << ", dimension: " << dimension << ", number of trials: " << numtrials << ", average weight: " << sum / numtrials << endl;
 }
