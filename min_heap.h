@@ -4,6 +4,7 @@
 #include <unordered_map>
 using namespace std;
 
+//vertex
 struct element
 {
   int label;
@@ -68,6 +69,7 @@ public:
   {
     if (label_map.find(i.label) == label_map.end())
     {
+      //insert
       arr.push_back(i);
       label_map[i.label] = heap_size() - 1;
       int n = arr.size() - 1;
@@ -79,6 +81,7 @@ public:
     }
     else
     {
+      //insert i is already in heap
       int index = label_map[i.label];
       if (arr[index].d > i.d)
       {
@@ -94,6 +97,7 @@ public:
 
   element extract_min()
   {
+    //implemented like in section
     if (heap_size() != 0)
     {
       element min = arr[0];

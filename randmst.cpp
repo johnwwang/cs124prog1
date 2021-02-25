@@ -64,6 +64,7 @@ float prims0(int v)
   return min_dist;
 }
 
+//typical prims, array for coordinates and calculate distances for all vertices
 float primsnot0(int v, int dim)
 {
   int S[v];
