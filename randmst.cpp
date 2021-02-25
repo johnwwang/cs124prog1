@@ -139,7 +139,6 @@ int main(int argc, char *argv[])
     {
       float p = primsnot0(numpoints, dimension);
       sum += p;
-      cout << p << endl;
     }
   }
 
